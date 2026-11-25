@@ -1,0 +1,7 @@
+{
+  "name": "nama-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
