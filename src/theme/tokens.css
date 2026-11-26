@@ -1,0 +1,124 @@
+/* ==========================================================================
+   QOC DESIGN SYSTEM v2 — SMOOTH TOKENS (Light & Dark Mode)
+   Palette: Primary #2563EB | Indigo #4338CA | WA/Lunas #16A34A | Warn #D97706 | Danger #DC2626
+   Baseline: Xiaomi Redmi 13C (360x800dp) -> Adaptive 320dp..768dp+
+   ========================================================================== */
+
+:root {
+  /* 1. Color Tokens (Light Mode) */
+  --app-surface: #f4f6fa;
+  --app-card: #ffffff;
+  --app-border: #e5eaf2;
+  --app-ink: #0f172a;
+  --app-muted: #64748b;
+
+  --ds-bg-canvas: var(--app-surface);
+  --ds-bg-surface: var(--app-card);
+  --ds-bg-muted: #f8fafc;
+  --ds-bg-subtle: #e9eef5;
+
+  --ds-text-primary: var(--app-ink);
+  --ds-text-secondary: #334155;
+  --ds-text-muted: var(--app-muted);
+
+  --ds-brand-primary: #2563eb;
+  --ds-brand-primary-active: #1d4ed8;
+  --ds-brand-soft: #eff6ff;
+  --ds-brand-soft-border: #dbeafe;
+  --ds-brand-soft-text: #1d4ed8;
+
+  --ds-wa-bg: #16a34a;
+  --ds-wa-bg-active: #15803d;
+
+  --ds-warn-bg: #d97706;
+  --ds-warn-soft: #fef3c7;
+  --ds-warn-text: #92400e;
+
+  --ds-danger-soft: #fee2e2;
+  --ds-danger-text: #b91c1c;
+  --ds-danger-solid: #dc2626;
+
+  --ds-border: var(--app-border);
+  --ds-border-strong: #cbd5e1;
+  --ds-shadow-card: 0 4px 16px -6px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.03);
+  --ds-shadow-btn-primary: 0 6px 16px -4px rgba(37, 99, 235, 0.34);
+  --ds-shadow-btn-wa: 0 6px 16px -4px rgba(22, 163, 74, 0.34);
+
+  /* 2. Spacing & Smooth Radius Scale */
+  --ds-container-max: 520px;
+  --ds-page-px: 16px;
+  --ds-page-py: 14px;
+  --ds-card-p: 16px;
+  --ds-card-radius: 18px;
+  --ds-gap-grid: 10px;
+  --ds-gap-stack: 14px;
+
+  /* 3. Standardized Control Dimensions */
+  --ds-btn-h-lg: 48px;
+  --ds-btn-h-md: 42px;
+  --ds-btn-h-sm: 34px;
+  --ds-btn-icon-box: 38px;
+
+  --ds-input-h: 44px;
+  --ds-input-radius: 12px;
+  --ds-tabbar-h: 64px;
+  --ds-header-h: 56px;
+
+  /* 4. Typography Scale */
+  --ds-fs-hero: clamp(1.5rem, 6.5vw, 1.75rem);
+  --ds-fs-h1: 1.0625rem;
+  --ds-fs-card: 0.90625rem;
+  --ds-fs-body: 0.84375rem;
+  --ds-fs-caption: 0.75rem;
+  --ds-fs-micro: 0.6875rem;
+}
+
+@media (max-width: 355px) {
+  :root {
+    --ds-page-px: 12px;
+    --ds-card-p: 14px;
+    --ds-gap-grid: 8px;
+  }
+}
+
+@media (min-width: 640px) {
+  :root {
+    --ds-page-px: 20px;
+    --ds-page-py: 18px;
+    --ds-card-p: 18px;
+  }
+}
+
+:root.ion-palette-dark {
+  --app-surface: #0f172a;
+  --app-card: #1e293b;
+  --app-border: #334155;
+  --app-ink: #f8fafc;
+  --app-muted: #94a3b8;
+
+  --ds-bg-muted: #0f172a;
+  --ds-bg-subtle: #283548;
+  --ds-text-secondary: #cbd5e1;
+
+  --ds-brand-primary: #3b82f6;
+  --ds-brand-primary-active: #2563eb;
+  --ds-brand-soft: rgba(59, 130, 246, 0.16);
+  --ds-brand-soft-border: rgba(59, 130, 246, 0.3);
+  --ds-brand-soft-text: #93c5fd;
+
+  --ds-wa-bg: #22c55e;
+  --ds-wa-bg-active: #16a34a;
+
+  --ds-warn-bg: #f59e0b;
+  --ds-warn-soft: rgba(245, 158, 11, 0.16);
+  --ds-warn-text: #fbbf24;
+
+  --ds-danger-soft: rgba(239, 68, 68, 0.16);
+  --ds-danger-text: #fca5a5;
+  --ds-danger-solid: #ef4444;
+
+  --ds-border-strong: #475569;
+  --ds-shadow-card: 0 4px 16px -4px rgba(0, 0, 0, 0.35);
+  --ds-shadow-btn-primary: 0 6px 16px -4px rgba(59, 130, 246, 0.35);
+  --ds-shadow-btn-wa: 0 6px 16px -4px rgba(34, 197, 94, 0.3);
+}

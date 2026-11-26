@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">QOC</string>
+    <string name="title_activity_main">QOC</string>
+    <string name="package_name">id.umkm.quotationinvoice</string>
+    <string name="custom_url_scheme">id.umkm.quotationinvoice</string>
+</resources>

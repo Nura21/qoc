@@ -1,2 +1,547 @@
-/* For information on how to create your own theme, please refer to:
-http://ionicframework.com/docs/theming/ */
+/* ==========================================================================
+   LAYER ORDER DECLARATION (CRITICAL FOR IONIC + TAILWIND V4!)
+   All Ionic base CSS lives in layer(base) so Tailwind utilities & Design System
+   components ALWAYS win over Ionic's button/heading resets.
+   ========================================================================== */
+@layer theme, base, components, utilities;
+
+@import '@ionic/react/css/core.css' layer(base);
+@import '@ionic/react/css/normalize.css' layer(base);
+@import '@ionic/react/css/structure.css' layer(base);
+@import '@ionic/react/css/typography.css' layer(base);
+@import '@ionic/react/css/padding.css' layer(base);
+@import '@ionic/react/css/float-elements.css' layer(base);
+@import '@ionic/react/css/text-alignment.css' layer(base);
+@import '@ionic/react/css/text-transformation.css' layer(base);
+@import '@ionic/react/css/flex-utils.css' layer(base);
+@import '@ionic/react/css/display.css' layer(base);
+@import '@ionic/react/css/palettes/dark.class.css' layer(base);
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@custom-variant dark (&:where(.ion-palette-dark, .ion-palette-dark *));
+@import './tokens.css';
+
+@layer base {
+  /* Reset Ionic typography.css heading bloat so our typography tokens govern cleanly */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    margin: 0;
+  }
+
+  button {
+    font-family: inherit;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+:root {
+  --ion-color-primary: #2563eb;
+  --ion-color-primary-rgb: 37, 99, 235;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #2157cf;
+  --ion-color-primary-tint: #3b73ed;
+
+  --ion-color-secondary: #4f46e5;
+  --ion-color-secondary-rgb: 79, 70, 229;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #463eca;
+  --ion-color-secondary-tint: #6159e8;
+
+  --ion-color-success: #16a34a;
+  --ion-color-success-rgb: 22, 163, 74;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #138f41;
+  --ion-color-success-tint: #2dac5c;
+
+  --ion-color-warning: #d97706;
+  --ion-color-warning-rgb: 217, 119, 6;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-warning-contrast-rgb: 255, 255, 255;
+  --ion-color-warning-shade: #bf6905;
+  --ion-color-warning-tint: #dd851f;
+
+  --ion-color-danger: #dc2626;
+  --ion-color-danger-rgb: 220, 38, 38;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #c22121;
+  --ion-color-danger-tint: #e03c3c;
+
+  --ion-background-color: var(--app-surface);
+  --ion-text-color: var(--app-ink);
+  --ion-card-background: var(--app-card);
+  --ion-toolbar-background: var(--app-card);
+  --ion-tab-bar-background: var(--app-card);
+  --ion-tab-bar-color: #94a3b8;
+  --ion-tab-bar-color-selected: var(--ds-brand-primary);
+  --ion-border-color: var(--app-border);
+
+  --ion-font-family:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+:root.ion-palette-dark {
+  --ion-color-primary: #3b82f6;
+  --ion-color-success: #22c55e;
+  --ion-color-warning: #f59e0b;
+  --ion-color-danger: #ef4444;
+}
+
+/* Crisp, Tight Top App Bar (Zero double top gap on Android native) */
+html.qoc-native-android {
+  --ion-safe-area-top: 0px;
+  --ion-safe-area-bottom: 0px;
+  --ion-safe-area-left: 0px;
+  --ion-safe-area-right: 0px;
+}
+
+ion-header ion-toolbar {
+  --min-height: var(--ds-header-h);
+  --padding-top: 0px;
+  --padding-bottom: 0px;
+  --border-width: 0 0 1px 0;
+  --border-color: var(--app-border);
+}
+
+/* Smooth 5-Tab Bottom Navigation Bar */
+ion-tab-bar {
+  height: var(--ds-tabbar-h);
+  border-top: 1px solid var(--app-border);
+  box-shadow: 0 -4px 16px -6px rgba(15, 23, 42, 0.05);
+}
+
+ion-tab-button {
+  --padding-top: 6px;
+  --padding-bottom: 6px;
+  --padding-start: 2px;
+  --padding-end: 2px;
+  min-width: 0;
+  font-size: 10.5px;
+  font-weight: 600;
+  position: relative;
+}
+
+ion-tab-button.tab-selected {
+  font-weight: 700;
+}
+
+ion-tab-button.tab-selected::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 3px;
+  border-radius: 0 0 999px 999px;
+  background: var(--ds-brand-primary);
+}
+
+ion-tab-button ion-icon {
+  font-size: 20px;
+  margin-bottom: 3px;
+}
+
+@layer components {
+  /* Responsive Page Shell */
+  .ds-container {
+    width: 100%;
+    max-width: var(--ds-container-max);
+    margin-left: auto;
+    margin-right: auto;
+    padding: var(--ds-page-py) var(--ds-page-px) 36px;
+  }
+
+  .ds-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-gap-stack);
+  }
+
+  /* Smooth Elevated Card */
+  .qoc-card {
+    background: var(--app-card);
+    border-radius: var(--ds-card-radius);
+    border: 1px solid var(--app-border);
+    box-shadow: var(--ds-shadow-card);
+    padding: var(--ds-card-p);
+  }
+
+  /* Premium Multi-Stop Blue-Indigo Hero Card */
+  .qoc-hero-card {
+    background: linear-gradient(135deg, #2563eb 0%, #2b5be8 48%, #4338ca 100%);
+    border-radius: 20px;
+    color: #ffffff;
+    padding: 18px;
+    box-shadow:
+      0 14px 28px -10px rgba(37, 99, 235, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+
+  /* Smooth Segmented Control */
+  .ds-segmented {
+    display: grid;
+    gap: 4px;
+    background: var(--ds-bg-subtle);
+    padding: 4px;
+    border-radius: 14px;
+  }
+
+  .ds-segment-btn {
+    height: 34px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--app-muted);
+    transition: all 0.18s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 8px;
+  }
+
+  .ds-segment-btn[data-active='true'] {
+    background: var(--app-card);
+    color: var(--ds-brand-primary);
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+  }
+
+  /* Smooth Filter Pill Chips */
+  .ds-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: var(--app-card);
+    color: var(--ds-text-secondary);
+    border: 1px solid var(--app-border);
+    transition: all 0.16s ease;
+    white-space: nowrap;
+  }
+
+  .ds-chip[data-active='true'] {
+    background: var(--ds-brand-primary);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 4px 10px -2px rgba(37, 99, 235, 0.32);
+  }
+
+  /* Design System Button Core */
+  .ds-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    user-select: none;
+    line-height: 1;
+    transition:
+      transform 0.12s ease,
+      background-color 0.16s ease,
+      box-shadow 0.16s ease,
+      opacity 0.16s ease;
+  }
+
+  .ds-btn:active {
+    transform: scale(0.975);
+  }
+
+  .ds-btn:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .ds-btn-lg {
+    height: var(--ds-btn-h-lg);
+    padding: 0 20px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    gap: 8px;
+  }
+
+  .ds-btn-md {
+    height: var(--ds-btn-h-md);
+    padding: 0 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    gap: 6px;
+  }
+
+  .ds-btn-sm {
+    height: var(--ds-btn-h-sm);
+    padding: 0 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    gap: 5px;
+  }
+
+  .ds-btn-icon {
+    height: var(--ds-btn-icon-box);
+    width: var(--ds-btn-icon-box);
+    padding: 0;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  .ds-btn-primary {
+    background: var(--ds-brand-primary);
+    color: #ffffff;
+    box-shadow: var(--ds-shadow-btn-primary);
+  }
+
+  .ds-btn-whatsapp {
+    background: var(--ds-wa-bg);
+    color: #ffffff;
+    box-shadow: var(--ds-shadow-btn-wa);
+  }
+
+  .ds-btn-secondary {
+    background: var(--ds-brand-soft);
+    color: var(--ds-brand-soft-text);
+    border: 1px solid var(--ds-brand-soft-border);
+  }
+
+  .ds-btn-outline {
+    background: var(--app-card);
+    color: var(--ds-text-primary);
+    border: 1px solid var(--ds-border-strong);
+  }
+
+  .ds-btn-danger {
+    background: var(--ds-danger-soft);
+    color: var(--ds-danger-text);
+  }
+
+  .ds-btn-ghost {
+    background: transparent;
+    color: var(--ds-text-secondary);
+  }
+
+  /* Smooth Form Input Control */
+  .ds-input-box {
+    width: 100%;
+    height: var(--ds-input-h);
+    background: var(--ds-bg-muted);
+    color: var(--ds-text-primary);
+    border: 1px solid var(--ds-border-strong);
+    border-radius: var(--ds-input-radius);
+    padding: 0 13px;
+    font-size: 14px;
+    font-weight: 500;
+    outline: none;
+    transition:
+      border-color 0.16s ease,
+      box-shadow 0.16s ease,
+      background-color 0.16s ease;
+  }
+
+  .ds-input-box:focus {
+    border-color: var(--ds-brand-primary);
+    background: var(--app-card);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+
+  .ds-textarea-box {
+    width: 100%;
+    background: var(--ds-bg-muted);
+    color: var(--ds-text-primary);
+    border: 1px solid var(--ds-border-strong);
+    border-radius: var(--ds-input-radius);
+    padding: 10px 13px;
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.5;
+    outline: none;
+    transition:
+      border-color 0.16s ease,
+      box-shadow 0.16s ease,
+      background-color 0.16s ease;
+  }
+
+  .ds-textarea-box:focus {
+    border-color: var(--ds-brand-primary);
+    background: var(--app-card);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+
+  /* Typography Primitives */
+  .ds-hero-num {
+    font-size: var(--ds-fs-hero);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ds-page-title {
+    font-size: var(--ds-fs-h1);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  .ds-card-title {
+    font-size: var(--ds-fs-card);
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .ds-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--app-muted);
+    line-height: 1.3;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Option A ("Snappy Fintech") Smooth GPU-Accelerated Opening Animation */
+@keyframes qocSplashSpring {
+  0% {
+    opacity: 0;
+    transform: scale(0.76) translateY(12px);
+  }
+  68% {
+    opacity: 1;
+    transform: scale(1.04) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes qocSplashPulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.42);
+  }
+}
+
+@keyframes qocSplashCheckDraw {
+  0% {
+    stroke-dashoffset: 24;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes qocSplashGlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes qocSplashProgress {
+  0% {
+    transform: scaleX(0.08);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+.qoc-launch-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--app-surface);
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.qoc-launch-glow {
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.14) 0%, rgba(37, 99, 235, 0) 70%);
+}
+
+.qoc-launch-exit {
+  opacity: 0;
+  transform: scale(1.04);
+  pointer-events: none;
+}
+
+.qoc-launch-emblem {
+  animation: qocSplashSpring 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.qoc-launch-pulse {
+  animation: qocSplashPulse 850ms cubic-bezier(0.16, 1, 0.3, 1) 240ms both;
+}
+
+.qoc-launch-check {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: qocSplashCheckDraw 360ms cubic-bezier(0.22, 1, 0.36, 1) 260ms forwards;
+}
+
+.qoc-launch-text {
+  animation: qocSplashGlideUp 420ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
+}
+
+.qoc-launch-pill {
+  animation: qocSplashGlideUp 420ms cubic-bezier(0.22, 1, 0.36, 1) 280ms both;
+}
+
+.qoc-launch-bar {
+  animation: qocSplashProgress 860ms cubic-bezier(0.22, 1, 0.36, 1) 220ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qoc-launch-emblem,
+  .qoc-launch-pulse,
+  .qoc-launch-check,
+  .qoc-launch-text,
+  .qoc-launch-pill,
+  .qoc-launch-bar {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .qoc-launch-overlay {
+    transition-duration: 140ms;
+  }
+}

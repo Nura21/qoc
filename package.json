@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:apk": "node scripts/build-apk.mjs",
     "preview": "vite preview",
     "lint": "npm run eslint && npm run typecheck:e2e && npm run prettier -- --check",
     "lint:fix": "npm run eslint -- --fix && npm run prettier -- --write",
@@ -18,18 +19,27 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@capacitor-community/sqlite": "^8.1.1",
+    "@capacitor/android": "^8.6.2",
     "@capacitor/app": "8.1.2",
     "@capacitor/core": "8.6.2",
+    "@capacitor/filesystem": "^8.1.5",
     "@capacitor/haptics": "8.0.2",
     "@capacitor/keyboard": "8.0.6",
+    "@capacitor/local-notifications": "^8.3.1",
+    "@capacitor/share": "^8.0.3",
     "@capacitor/status-bar": "8.0.4",
     "@ionic/react": "^9.0.0",
     "@ionic/react-router": "^9.0.0",
+    "@tailwindcss/vite": "^4.3.5",
     "ionicons": "^8.1.0",
+    "jspdf": "^4.2.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-router": "^6.30.0",
-    "react-router-dom": "^6.30.0"
+    "react-router-dom": "^6.30.0",
+    "sql.js": "^1.17.0",
+    "tailwindcss": "^4.3.5"
   },
   "devDependencies": {
     "@capacitor/cli": "8.6.2",
