@@ -88,8 +88,7 @@
   --ion-tab-bar-color-selected: var(--ds-brand-primary);
   --ion-border-color: var(--app-border);
 
-  --ion-font-family:
-    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --ion-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 :root.ion-palette-dark {
@@ -115,29 +114,84 @@ ion-header ion-toolbar {
   --border-color: var(--app-border);
 }
 
-/* Smooth 5-Tab Bottom Navigation Bar */
-ion-tab-bar {
-  height: var(--ds-tabbar-h);
-  border-top: 1px solid var(--app-border);
-  box-shadow: 0 -4px 16px -6px rgba(15, 23, 42, 0.05);
+/* Deterministic App Shell + Smooth 5-Tab Bottom Navigation Bar */
+.qoc-app-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
-ion-tab-button {
-  --padding-top: 6px;
-  --padding-bottom: 6px;
-  --padding-start: 2px;
-  --padding-end: 2px;
+.qoc-app-outlet {
+  position: relative;
+  flex: 1 1 0%;
+  min-height: 0;
+  width: 100%;
+}
+
+.qoc-bottom-nav {
+  position: relative;
+  z-index: 200;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: stretch;
+  flex-shrink: 0;
+  height: calc(var(--ds-tabbar-h) + var(--ion-safe-area-bottom, 0px));
+  max-height: calc(var(--ds-tabbar-h) + var(--ion-safe-area-bottom, 0px));
+  padding-bottom: var(--ion-safe-area-bottom, 0px);
+  background: var(--app-card);
+  border-top: 1px solid var(--app-border);
+  box-shadow: 0 -4px 16px -6px rgba(15, 23, 42, 0.06);
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  overflow: hidden;
+  transition:
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 200ms ease,
+    max-height 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 200ms ease;
+  will-change: transform, opacity;
+}
+
+.qoc-bottom-nav.qoc-tabbar-hidden {
+  max-height: 0;
+  height: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  border-top-color: transparent;
+  transform: translate3d(0, 100%, 0);
+  pointer-events: none;
+}
+
+.qoc-nav-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
   min-width: 0;
+  padding: 6px 2px;
+  color: var(--ion-tab-bar-color);
   font-size: 10.5px;
   font-weight: 600;
-  position: relative;
+  transition:
+    color 160ms ease,
+    transform 120ms ease;
 }
 
-ion-tab-button.tab-selected {
+.qoc-nav-btn:active {
+  transform: scale(0.94);
+}
+
+.qoc-nav-btn[data-selected='true'] {
+  color: var(--ds-brand-primary);
   font-weight: 700;
 }
 
-ion-tab-button.tab-selected::before {
+.qoc-nav-btn[data-selected='true']::before {
   content: '';
   position: absolute;
   top: 0;
@@ -149,9 +203,32 @@ ion-tab-button.tab-selected::before {
   background: var(--ds-brand-primary);
 }
 
-ion-tab-button ion-icon {
+.qoc-nav-icon {
   font-size: 20px;
-  margin-bottom: 3px;
+}
+
+.qoc-nav-label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.1;
+}
+
+/* Smooth Rounded Bottom Sheet & Dialog Surfaces */
+ion-modal.qoc-sheet-modal {
+  --border-radius: 22px 22px 0 0;
+  --box-shadow: 0 -10px 32px rgba(15, 23, 42, 0.16);
+}
+
+ion-action-sheet .action-sheet-group {
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+}
+
+ion-alert .alert-wrapper {
+  border-radius: 18px !important;
+  overflow: hidden;
 }
 
 @layer components {
@@ -177,6 +254,26 @@ ion-tab-button ion-icon {
     border: 1px solid var(--app-border);
     box-shadow: var(--ds-shadow-card);
     padding: var(--ds-card-p);
+  }
+
+  /* Breathable Grouped List Card (Inset Hairline Dividers, Zero Card-Stack Clutter) */
+  .qoc-list-group {
+    background: var(--app-card);
+    border-radius: var(--ds-card-radius);
+    border: 1px solid var(--app-border);
+    box-shadow: var(--ds-shadow-card);
+    overflow: hidden;
+  }
+
+  /* Intentional Section & Receipt Dividers */
+  .ds-divider {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(90deg, transparent 0%, var(--app-border) 10%, var(--app-border) 90%, transparent 100%);
+  }
+
+  .ds-divider-dashed {
+    border-top: 1px dashed var(--ds-border-strong);
   }
 
   /* Premium Multi-Stop Blue-Indigo Hero Card */
@@ -205,7 +302,10 @@ ion-tab-button ion-icon {
     font-size: 12px;
     font-weight: 600;
     color: var(--app-muted);
-    transition: all 0.18s ease;
+    transition:
+      background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 180ms ease,
+      box-shadow 180ms ease;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -232,8 +332,33 @@ ion-tab-button ion-icon {
     background: var(--app-card);
     color: var(--ds-text-secondary);
     border: 1px solid var(--app-border);
-    transition: all 0.16s ease;
+    transition:
+      background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      transform 120ms ease;
     white-space: nowrap;
+  }
+
+  /* Smooth Collapsible Disclosure Bar (CSS Grid 0fr <-> 1fr, zero layout snap) */
+  .ds-collapse {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 200ms ease;
+  }
+
+  .ds-collapse[data-open='true'] {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  .ds-collapse-inner {
+    overflow: hidden;
+    min-height: 0;
   }
 
   .ds-chip[data-active='true'] {
@@ -531,17 +656,116 @@ ion-tab-button ion-icon {
   animation: qocSplashProgress 860ms cubic-bezier(0.22, 1, 0.36, 1) 220ms both;
 }
 
+/* Interactive Spotlight App Tour (GPU-Composited 60fps) */
+@keyframes qocTourFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes qocTourContentIn {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.qoc-tour-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99990;
+  overflow: hidden;
+  animation: qocTourFadeIn 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: opacity 200ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.qoc-tour-closing {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.qoc-tour-spotlight {
+  position: fixed;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 9999px rgba(15, 23, 42, 0.74),
+    0 0 0 2.5px rgba(96, 165, 250, 0.95),
+    0 0 22px 2px rgba(37, 99, 235, 0.38);
+  transition:
+    top 290ms cubic-bezier(0.22, 1, 0.36, 1),
+    left 290ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 290ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 290ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-radius 290ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.qoc-tour-card {
+  position: fixed;
+  z-index: 1;
+  border-radius: 20px;
+  border: 1px solid var(--app-border);
+  background: var(--app-card);
+  padding: 16px;
+  box-shadow:
+    0 20px 44px -12px rgba(15, 23, 42, 0.35),
+    0 4px 12px rgba(15, 23, 42, 0.12);
+  transition:
+    top 290ms cubic-bezier(0.22, 1, 0.36, 1),
+    bottom 290ms cubic-bezier(0.22, 1, 0.36, 1),
+    left 290ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.qoc-tour-content {
+  animation: qocTourContentIn 210ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.qoc-tour-caret {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--app-card);
+  border-color: var(--app-border);
+  transform: translateX(-50%) rotate(45deg);
+  transition: left 290ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.qoc-tour-caret-top {
+  top: -7px;
+  border-top: 1px solid var(--app-border);
+  border-left: 1px solid var(--app-border);
+}
+
+.qoc-tour-caret-bottom {
+  bottom: -7px;
+  border-right: 1px solid var(--app-border);
+  border-bottom: 1px solid var(--app-border);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .qoc-launch-emblem,
   .qoc-launch-pulse,
   .qoc-launch-check,
   .qoc-launch-text,
   .qoc-launch-pill,
-  .qoc-launch-bar {
+  .qoc-launch-bar,
+  .qoc-tour-backdrop,
+  .qoc-tour-content {
     animation: none;
     stroke-dashoffset: 0;
   }
-  .qoc-launch-overlay {
-    transition-duration: 140ms;
+  .qoc-launch-overlay,
+  .qoc-bottom-nav,
+  .ds-collapse,
+  .qoc-tour-spotlight,
+  .qoc-tour-card,
+  .qoc-tour-caret {
+    transition-duration: 120ms;
   }
 }

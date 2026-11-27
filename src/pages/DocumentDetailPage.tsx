@@ -1,5 +1,13 @@
 import { IonBackButton, IonButtons, IonContent, IonHeader, IonIcon, IonPage, IonToast, IonToolbar } from '@ionic/react';
-import { createOutline, logoWhatsapp, printOutline, sendOutline, trashOutline } from 'ionicons/icons';
+import {
+  createOutline,
+  logoWhatsapp,
+  printOutline,
+  sendOutline,
+  timeOutline,
+  trashOutline,
+  walletOutline,
+} from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -66,7 +74,8 @@ const DocumentDetailPage: React.FC<DocumentDetailPageProps> = ({ docIdOverride }
 
   const [payModalOpen, setPayModalOpen] = useState(false);
   const [dealModalOpen, setDealModalOpen] = useState(false);
-  const [waModalMode, setWaModalMode] = useState<'share' | 'remind' | null>(null);
+  const [waModalMode, setWaModalMode] = useState<'share' | 'remind'>('share');
+  const [waModalOpen, setWaModalOpen] = useState(false);
   const [confirmDeleteDraft, setConfirmDeleteDraft] = useState(false);
   const [confirmVoidInvoice, setConfirmVoidInvoice] = useState(false);
   const [pendingRemovePayment, setPendingRemovePayment] = useState<DocumentPayment | null>(null);
@@ -97,7 +106,7 @@ const DocumentDetailPage: React.FC<DocumentDetailPageProps> = ({ docIdOverride }
 
   const handleConfirmWaAction = async () => {
     const mode = waModalMode;
-    setWaModalMode(null);
+    setWaModalOpen(false);
     try {
       if (mode === 'remind') {
         await shareService.openReminderWA(detail.id);
@@ -227,7 +236,16 @@ const DocumentDetailPage: React.FC<DocumentDetailPageProps> = ({ docIdOverride }
           <DocumentPaperPreview detail={detail} remaining={remaining} />
 
           {/* Primary Green CTA: Share PDF to WhatsApp */}
-          <DsButton size="lg" variant="whatsapp" icon={sendOutline} fullWidth onClick={() => setWaModalMode('share')}>
+          <DsButton
+            size="lg"
+            variant="whatsapp"
+            icon={sendOutline}
+            fullWidth
+            onClick={() => {
+              setWaModalMode('share');
+              setWaModalOpen(true);
+            }}
+          >
             Kirim PDF ke WhatsApp (1-Klik)
           </DsButton>
 
@@ -266,7 +284,10 @@ const DocumentDetailPage: React.FC<DocumentDetailPageProps> = ({ docIdOverride }
                   variant="secondary"
                   icon={logoWhatsapp}
                   fullWidth
-                  onClick={() => setWaModalMode('remind')}
+                  onClick={() => {
+                    setWaModalMode('remind');
+                    setWaModalOpen(true);
+                  }}
                 >
                   Kirim Pengingat Jatuh Tempo via WA
                 </DsButton>
@@ -298,12 +319,21 @@ const DocumentDetailPage: React.FC<DocumentDetailPageProps> = ({ docIdOverride }
 
           {/* Payment History (if Invoice has payments) */}
           {detail.payments.length > 0 && (
-            <section className="qoc-card space-y-2">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-[var(--ds-text-muted)]">
-                Riwayat Pembayaran ({detail.payments.length})
+            <section className="qoc-card space-y-2.5">
+              <div className="flex items-center gap-2 border-b border-[var(--app-border)] pb-2">
+                <span
+                  aria-hidden="true"
+                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-100/90 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400"
+                >
+                  <IonIcon icon={walletOutline} className="text-[13px]" />
+                </span>
+                <div className="ds-section-label">Riwayat Pembayaran ({detail.payments.length})</div>
               </div>
               {detail.payments.map((p) => (
-                <div key={p.id} className="rounded-xl border border-[var(--app-border)] p-2.5 text-xs">
+                <div
+                  key={p.id}
+                  className="rounded-xl border border-[var(--app-border)] bg-[var(--ds-bg-muted)]/60 p-2.5 text-xs"
+                >
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-extrabold tabular-nums text-[var(--ds-text-primary)]">
                       {formatRupiah(p.amount)}
@@ -351,13 +381,25 @@ const DocumentDetailPage: React.FC<DocumentDetailPageProps> = ({ docIdOverride }
             </section>
           )}
 
-          {/* Activity Timeline */}
-          <section className="qoc-card space-y-2">
-            <div className="ds-section-label">Riwayat Aktivitas &amp; WA</div>
-            <div className="space-y-2">
-              {detail.activities.map((a) => (
-                <div key={a.id} className="flex items-start gap-2 text-[11px]">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />
+          {/* Activity Timeline with Crisp Vertical Rail */}
+          <section className="qoc-card space-y-2.5">
+            <div className="flex items-center gap-2 border-b border-[var(--app-border)] pb-2">
+              <span
+                aria-hidden="true"
+                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[var(--ds-brand-soft)] text-[var(--ds-brand-primary)]"
+              >
+                <IonIcon icon={timeOutline} className="text-[13px]" />
+              </span>
+              <div className="ds-section-label">Riwayat Aktivitas &amp; WA</div>
+            </div>
+            <div className="relative space-y-2.5 pl-4 before:absolute before:bottom-2 before:left-[5px] before:top-2 before:w-[1.5px] before:bg-[var(--app-border)]">
+              {detail.activities.map((a, idx) => (
+                <div key={a.id} className="relative flex items-start gap-2 text-[11px]">
+                  <span
+                    className={`absolute -left-4 top-1.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--app-card)] ${
+                      idx === 0 ? 'bg-[var(--ds-brand-primary)]' : 'bg-[var(--ds-border-strong)]'
+                    }`}
+                  />
                   <div className="min-w-0">
                     <div className="font-medium leading-snug text-[var(--ds-text-primary)]">
                       {ACTIVITY_LABELS[a.action_type] || a.action_type}
@@ -480,8 +522,8 @@ const DocumentDetailPage: React.FC<DocumentDetailPageProps> = ({ docIdOverride }
         />
 
         <WaPreviewModal
-          isOpen={waModalMode !== null}
-          mode={waModalMode ?? 'share'}
+          isOpen={waModalOpen}
+          mode={waModalMode}
           message={
             waModalMode === 'remind'
               ? shareService.buildReminderMessage(detail)
@@ -489,7 +531,7 @@ const DocumentDetailPage: React.FC<DocumentDetailPageProps> = ({ docIdOverride }
           }
           pdfFilename={pdfFilename}
           phoneLabel={client?.phone_wa || detail.client_phone_wa || ''}
-          onClose={() => setWaModalMode(null)}
+          onClose={() => setWaModalOpen(false)}
           onConfirm={() => void handleConfirmWaAction()}
         />
 

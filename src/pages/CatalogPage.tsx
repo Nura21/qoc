@@ -1,5 +1,5 @@
-import { IonContent, IonHeader, IonPage, IonToast, IonToolbar } from '@ionic/react';
-import { addOutline, cubeOutline } from 'ionicons/icons';
+import { IonContent, IonHeader, IonIcon, IonPage, IonToast, IonToolbar } from '@ionic/react';
+import { addOutline, briefcaseOutline, cubeOutline, trashOutline } from 'ionicons/icons';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -147,6 +147,8 @@ const CatalogPage: React.FC = () => {
             ))}
           </div>
 
+          <div className="ds-divider" aria-hidden="true" />
+
           {items.length === 0 ? (
             <EmptyState
               icon={cubeOutline}
@@ -157,68 +159,89 @@ const CatalogPage: React.FC = () => {
             />
           ) : (
             <div className="space-y-3">
-              {items.map((it) => (
-                <div
-                  key={it.id}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => openEditModal(it)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') openEditModal(it);
-                  }}
-                  className="qoc-card flex cursor-pointer items-center justify-between gap-3 transition active:scale-[0.99]"
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <span
-                        className={`rounded-md px-2 py-0.5 text-[10px] font-extrabold ${
-                          it.item_type === 'GOODS'
-                            ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-                            : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
-                        }`}
-                      >
-                        {it.item_type === 'GOODS' ? 'BARANG' : 'JASA'}
-                      </span>
-                      {it.sku && <span className="font-mono text-[10.5px] text-[var(--ds-text-muted)]">{it.sku}</span>}
-                      {it.category && (
-                        <span className="truncate text-[10.5px] text-[var(--ds-text-muted)]">· {it.category}</span>
-                      )}
-                    </div>
-
-                    <div className="ds-card-title mt-1 break-words text-[var(--ds-text-primary)]">{it.name}</div>
-
-                    <div className="mt-0.5 text-[12px] text-[var(--ds-text-muted)]">
-                      <span className="font-bold tabular-nums text-[var(--ds-brand-primary)]">
-                        {formatRupiah(it.default_price)}
-                      </span>{' '}
-                      / {it.unit}
-                      {Boolean(it.track_stock) && (
-                        <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                          {' '}
-                          · Stok: {it.stock_qty ?? 0}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex shrink-0 flex-col gap-1.5">
-                    <DsButton size="sm" variant="primary" onClick={(e) => handleUseInForm(it, e)}>
-                      + Pakai
-                    </DsButton>
-                    <DsButton
-                      size="sm"
-                      variant="ghost"
-                      className="!h-7 !text-[11px] !text-[var(--ds-text-muted)]"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPendingDelete(it);
-                      }}
+              {items.map((it) => {
+                const isGoods = it.item_type === 'GOODS';
+                return (
+                  <div
+                    key={it.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => openEditModal(it)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') openEditModal(it);
+                    }}
+                    className={`qoc-card flex cursor-pointer items-center gap-3 transition active:scale-[0.99] ${
+                      isGoods
+                        ? 'border-l-[3.5px] border-l-amber-400/90 dark:border-l-amber-500/80'
+                        : 'border-l-[3.5px] border-l-indigo-400/90 dark:border-l-indigo-500/80'
+                    }`}
+                  >
+                    <div
+                      aria-hidden="true"
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                        isGoods
+                          ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
+                          : 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300'
+                      }`}
                     >
-                      Hapus
-                    </DsButton>
+                      <IonIcon icon={isGoods ? cubeOutline : briefcaseOutline} className="text-[19px]" />
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span
+                          className={`rounded-md px-1.5 py-0.5 text-[9.5px] font-extrabold ${
+                            isGoods
+                              ? 'bg-amber-100/90 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                              : 'bg-indigo-100/90 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
+                          }`}
+                        >
+                          {isGoods ? 'BARANG' : 'JASA'}
+                        </span>
+                        {it.sku && (
+                          <span className="font-mono text-[10.5px] text-[var(--ds-text-muted)]">{it.sku}</span>
+                        )}
+                        {it.category && (
+                          <span className="truncate text-[10.5px] text-[var(--ds-text-muted)]">· {it.category}</span>
+                        )}
+                      </div>
+
+                      <div className="ds-card-title mt-1 break-words text-[var(--ds-text-primary)]">{it.name}</div>
+
+                      <div className="mt-0.5 text-[12px] text-[var(--ds-text-muted)]">
+                        <span className="font-bold tabular-nums text-[var(--ds-brand-primary)]">
+                          {formatRupiah(it.default_price)}
+                        </span>{' '}
+                        / {it.unit}
+                        {Boolean(it.track_stock) && (
+                          <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                            {' '}
+                            · Stok {it.stock_qty ?? 0}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex shrink-0 items-center gap-1.5">
+                      <DsButton size="sm" variant="primary" onClick={(e) => handleUseInForm(it, e)}>
+                        + Pakai
+                      </DsButton>
+                      <button
+                        type="button"
+                        aria-label={`Hapus ${it.name}`}
+                        title="Hapus"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPendingDelete(it);
+                        }}
+                        className="flex h-[34px] w-[34px] items-center justify-center rounded-[10px] border border-[var(--app-border)] bg-[var(--ds-bg-muted)] text-[var(--ds-text-muted)] transition active:bg-red-50 active:text-red-600 dark:active:bg-red-950/50"
+                      >
+                        <IonIcon icon={trashOutline} className="text-[15px]" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

@@ -10,7 +10,7 @@ import {
   IonToast,
   IonToolbar,
 } from '@ionic/react';
-import { chevronDownOutline, chevronUpOutline, cubeOutline } from 'ionicons/icons';
+import { chevronDownOutline, cubeOutline, layersOutline, personOutline, pricetagOutline } from 'ionicons/icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
@@ -338,8 +338,18 @@ const DocumentForm: React.FC = () => {
 
       <IonContent>
         <div className="ds-container ds-stack pb-12">
-          {/* Card 1: Klien, Judul, Tanggal & Diskon */}
+          {/* Card 1: Klien, Judul & Tanggal */}
           <section className="qoc-card space-y-3">
+            <div className="flex items-center gap-2 border-b border-[var(--app-border)] pb-2.5">
+              <span
+                aria-hidden="true"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--ds-brand-soft)] text-[var(--ds-brand-primary)]"
+              >
+                <IonIcon icon={personOutline} className="text-sm" />
+              </span>
+              <h3 className="ds-card-title text-[var(--ds-text-primary)]">Info Dokumen &amp; Klien</h3>
+            </div>
+
             <DsSelect
               label="Klien"
               placeholder="-- Pilih Klien --"
@@ -380,8 +390,16 @@ const DocumentForm: React.FC = () => {
 
           {/* Card 2: Rincian Item + Picker List Barang + Inline Edit & Stepper Qty */}
           <section className="qoc-card space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <h3 className="ds-card-title text-[var(--ds-text-primary)]">Rincian Item ({lines.length})</h3>
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--app-border)] pb-2.5">
+              <div className="flex items-center gap-2">
+                <span
+                  aria-hidden="true"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300"
+                >
+                  <IonIcon icon={layersOutline} className="text-sm" />
+                </span>
+                <h3 className="ds-card-title text-[var(--ds-text-primary)]">Rincian Item ({lines.length})</h3>
+              </div>
               <div className="flex items-center gap-1.5">
                 <DsButton size="sm" variant="outline" onClick={openAddManualModal}>
                   + Manual
@@ -411,7 +429,7 @@ const DocumentForm: React.FC = () => {
               </div>
             )}
 
-            <div className="space-y-1 border-t border-[var(--app-border)] pt-2.5 text-xs">
+            <div className="ds-divider-dashed space-y-1 pt-3 text-xs">
               <div className="flex justify-between text-[11px] text-[var(--ds-text-muted)]">
                 <span>Subtotal</span>
                 <span className="tabular-nums">{formatRupiah(subtotal)}</span>
@@ -435,59 +453,77 @@ const DocumentForm: React.FC = () => {
             </div>
           </section>
 
-          {/* Card 3: Progressive Disclosure — Diskon, Pajak & Scope */}
-          <section className="qoc-card space-y-3">
+          {/* Card 3: Progressive Disclosure — Diskon, Pajak & Scope (Smooth CSS Grid Collapse) */}
+          <section className="qoc-card">
             <button
               type="button"
+              aria-expanded={showAdvanced}
               onClick={() => {
                 void hapticLight();
                 setShowAdvanced((v) => !v);
               }}
-              className="flex w-full items-center justify-between text-left"
+              className="flex w-full items-center justify-between gap-2.5 text-left"
             >
-              <div>
-                <div className="text-xs font-bold text-[var(--ds-text-primary)]">
-                  Diskon, Pajak &amp; Scope Kerja (Opsional)
-                </div>
-                <div className="text-[10px] text-[var(--ds-text-muted)]">
-                  {disc > 0 || tax > 0
-                    ? `Diskon ${formatRupiah(disc)}${tax > 0 ? ` · Pajak ${formatRupiah(tax)}` : ''}`
-                    : scopeAndTerms
-                      ? 'Scope terisi otomatis dari Profil'
-                      : 'Ketuk untuk atur diskon, PPN, atau syarat revisi'}
+              <div className="flex min-w-0 items-center gap-2.5">
+                <span
+                  aria-hidden="true"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300"
+                >
+                  <IonIcon icon={pricetagOutline} className="text-sm" />
+                </span>
+                <div className="min-w-0">
+                  <div className="text-xs font-bold text-[var(--ds-text-primary)]">
+                    Diskon, Pajak &amp; Scope Kerja (Opsional)
+                  </div>
+                  <div className="truncate text-[10px] text-[var(--ds-text-muted)]">
+                    {disc > 0 || tax > 0
+                      ? `Diskon ${formatRupiah(disc)}${tax > 0 ? ` · Pajak ${formatRupiah(tax)}` : ''}`
+                      : scopeAndTerms
+                        ? 'Scope terisi otomatis dari Profil'
+                        : 'Ketuk untuk atur diskon, PPN, atau syarat revisi'}
+                  </div>
                 </div>
               </div>
               <IonIcon
-                icon={showAdvanced ? chevronUpOutline : chevronDownOutline}
-                className="shrink-0 text-base text-[var(--ds-text-muted)]"
+                icon={chevronDownOutline}
+                className={`shrink-0 text-base text-[var(--ds-text-muted)] transition-transform duration-[260ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                  showAdvanced ? 'rotate-180' : 'rotate-0'
+                }`}
               />
             </button>
 
-            {showAdvanced && (
-              <div className="space-y-3 border-t border-[var(--app-border)] pt-3">
-                <div className="grid grid-cols-2 gap-2.5">
-                  <DsCurrencyInput
-                    label="Diskon"
-                    placeholder="0"
-                    error={discountWarning}
-                    value={discountAmount}
-                    onValueChange={setDiscountAmount}
-                  />
-                  <DsCurrencyInput label="Pajak / PPN" placeholder="0" value={taxAmount} onValueChange={setTaxAmount} />
-                </div>
+            <div className="ds-collapse" data-open={String(showAdvanced)}>
+              <div className="ds-collapse-inner">
+                <div className="mt-3 space-y-3 border-t border-[var(--app-border)] pt-3">
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <DsCurrencyInput
+                      label="Diskon"
+                      placeholder="0"
+                      error={discountWarning}
+                      value={discountAmount}
+                      onValueChange={setDiscountAmount}
+                    />
+                    <DsCurrencyInput
+                      label="Pajak / PPN"
+                      placeholder="0"
+                      value={taxAmount}
+                      onValueChange={setTaxAmount}
+                    />
+                  </div>
 
-                <DsTextarea
-                  label="Scope Kerja & Batas Revisi"
-                  rows={3}
-                  placeholder="Maksimal 2x revisi minor. Pekerjaan tambahan di luar rincian dikenakan biaya sesuai kesepakatan."
-                  value={scopeAndTerms}
-                  onValueChange={setScopeAndTerms}
-                  rightSlot={
-                    <span className="text-[10px] font-semibold text-[var(--ds-brand-primary)]">Auto-fill Profil</span>
-                  }
-                />
+                  <DsTextarea
+                    label="Scope Kerja & Batas Revisi"
+                    rows={3}
+                    placeholder="Maksimal 2x revisi minor. Pekerjaan tambahan di luar rincian dikenakan biaya sesuai kesepakatan."
+                    value={scopeAndTerms}
+                    onValueChange={setScopeAndTerms}
+                    rightSlot={
+                      <span className="text-[10px] font-semibold text-[var(--ds-brand-primary)]">Auto-fill Profil</span>
+                    }
+                  />
+                </div>
               </div>
-            )}
+            </div>
           </section>
         </div>
 
@@ -501,10 +537,7 @@ const DocumentForm: React.FC = () => {
         <ManualItemModal
           isOpen={manualModalOpen}
           editingItem={editingSeed}
-          onClose={() => {
-            setManualModalOpen(false);
-            setEditingLineKey(null);
-          }}
+          onClose={() => setManualModalOpen(false)}
           onSave={handleSaveManualOrEditedItem}
         />
 

@@ -1,9 +1,15 @@
 import { IonContent, IonHeader, IonIcon, IonPage, IonToast, IonToolbar } from '@ionic/react';
 import {
   bookOutline,
+  businessOutline,
+  cardOutline,
   chevronForwardOutline,
   colorPaletteOutline,
+  compassOutline,
+  documentTextOutline,
   imageOutline,
+  optionsOutline,
+  peopleOutline,
   shieldCheckmarkOutline,
   sparklesOutline,
   trashOutline,
@@ -16,12 +22,14 @@ import { UserGuideModal } from '../components/common/UserGuideModal';
 import { DsButton } from '../components/ui/DsButton';
 import { DsInput, DsTextarea } from '../components/ui/DsField';
 import { DsFormModal } from '../components/ui/DsFormModal';
+import { DsSectionHeader } from '../components/ui/DsSectionHeader';
 import { backupService } from '../db/backup';
 import { clearAllData, seedDemoData } from '../db/seedDemoData';
 import { useAsyncQuery } from '../hooks/useAsyncQuery';
 import { useToastMessage } from '../hooks/useToastMessage';
 import { clientService } from '../modules/clients/clientService';
 import { profileService } from '../modules/profile/profileService';
+import { appTour } from '../store/appTour';
 import type { Client } from '../types/database';
 import { hapticLight } from '../utils/haptics';
 import { fileToResizedDataUrl } from '../utils/imageHelper';
@@ -253,199 +261,244 @@ const ProfilePage: React.FC = () => {
 
       <IonContent>
         <div className="ds-container ds-stack">
-          {/* Card 1: Business Profile Summary */}
-          <section className="qoc-card space-y-3">
-            <div className="flex items-center gap-3">
-              {profile?.logo_path ? (
-                <img
-                  src={profile.logo_path}
-                  alt="Logo"
-                  className="h-12 w-12 shrink-0 rounded-2xl border border-[var(--app-border)] object-contain p-1"
-                />
-              ) : (
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-sm font-extrabold text-white shadow-sm shadow-blue-600/20">
-                  {getInitials(profile?.name || 'QO')}
-                </div>
-              )}
-              <div className="min-w-0 flex-1">
-                <div className="ds-card-title truncate text-[var(--ds-text-primary)]">{displayName}</div>
-                <div className="mt-0.5 truncate text-[12px] text-[var(--ds-text-muted)]">
-                  {bankSummary || 'Rekening bank belum diatur'}
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-[var(--app-border)] bg-[var(--ds-bg-muted)] p-3 text-[12px] leading-relaxed text-[var(--ds-text-secondary)]">
-              <div className="mb-1 text-[11.5px] font-bold text-[var(--ds-text-primary)]">
-                Default Scope &amp; Revisi
-              </div>
-              {profile?.default_scope_terms || 'Belum ada template scope default. Ketuk Edit Profil untuk mengaturnya.'}
-            </div>
-          </section>
-
-          {/* Card 2: Daftar Klien Tersimpan */}
-          <section className="qoc-card">
-            <div className="mb-2.5 flex items-center justify-between gap-2">
-              <h2 className="ds-card-title text-[var(--ds-text-primary)]">Daftar Klien ({clients.length})</h2>
-              <div className="flex shrink-0 items-center gap-1.5">
-                {clients.length > 0 && (
-                  <DsButton size="sm" variant="ghost" onClick={() => navigate('/clients')}>
-                    Lihat Semua
-                  </DsButton>
+          {/* Zone 1: Identitas Usaha & Rekening */}
+          <div>
+            <DsSectionHeader icon={businessOutline} tone="brand" title="Identitas Usaha" />
+            <section className="qoc-card space-y-3 border-t-[3px] border-t-[var(--ds-brand-primary)]">
+              <div className="flex items-center gap-3">
+                {profile?.logo_path ? (
+                  <img
+                    src={profile.logo_path}
+                    alt="Logo"
+                    className="h-12 w-12 shrink-0 rounded-2xl border border-[var(--app-border)] object-contain p-1"
+                  />
+                ) : (
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-sm font-extrabold text-white shadow-sm shadow-blue-600/20">
+                    {getInitials(profile?.name || 'QO')}
+                  </div>
                 )}
+                <div className="min-w-0 flex-1">
+                  <div className="ds-card-title truncate text-[var(--ds-text-primary)]">{displayName}</div>
+                  <div className="mt-1 flex items-center gap-1.5 truncate text-[12px] text-[var(--ds-text-muted)]">
+                    <IonIcon icon={cardOutline} className="shrink-0 text-sm text-[var(--ds-brand-primary)]" />
+                    <span className="truncate">{bankSummary || 'Rekening bank belum diatur'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-[var(--app-border)] bg-[var(--ds-bg-muted)] p-3 text-[12px] leading-relaxed text-[var(--ds-text-secondary)]">
+                <div className="mb-1 flex items-center gap-1.5 text-[11.5px] font-bold text-[var(--ds-text-primary)]">
+                  <IonIcon icon={documentTextOutline} className="text-xs text-[var(--ds-brand-primary)]" />
+                  <span>Default Scope &amp; Revisi</span>
+                </div>
+                {profile?.default_scope_terms ||
+                  'Belum ada template scope default. Ketuk Edit Profil untuk mengaturnya.'}
+              </div>
+            </section>
+          </div>
+
+          {/* Zone 2: Daftar Klien Tersimpan */}
+          <div>
+            <DsSectionHeader
+              divider
+              icon={peopleOutline}
+              tone="indigo"
+              title={`Daftar Klien (${clients.length})`}
+              actionLabel={clients.length > 0 ? 'Lihat Semua' : undefined}
+              onAction={clients.length > 0 ? () => navigate('/clients') : undefined}
+            />
+            <section className="qoc-card">
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <span className="text-[11.5px] text-[var(--ds-text-muted)]">
+                  Kontak pelanggan untuk isi cepat dokumen
+                </span>
                 <DsButton size="sm" variant="secondary" onClick={openAddClient}>
                   + Tambah
                 </DsButton>
               </div>
-            </div>
 
-            {clients.length === 0 ? (
-              <p className="py-4 text-center text-[12px] text-[var(--ds-text-muted)]">
-                Belum ada klien tersimpan. Ketuk <strong>+ Tambah</strong> di atas.
-              </p>
-            ) : (
-              <div className="divide-y divide-[var(--app-border)]">
-                {clients.map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => openEditClient(c)}
-                    className="flex w-full items-center justify-between gap-2.5 py-2.5 text-left transition active:opacity-75"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate text-[13px] font-bold text-[var(--ds-text-primary)]">{c.name}</div>
-                      <div className="truncate text-[11px] text-[var(--ds-text-muted)]">
-                        {c.company_name || 'Perorangan'}
-                      </div>
-                    </div>
-                    <span className="shrink-0 font-mono text-[11px] text-[var(--ds-text-muted)]">
-                      {c.phone_wa || '-'}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </section>
-
-          {/* Card 3: Cadangkan & Pulihkan Data */}
-          <section className="space-y-3 rounded-[18px] border border-emerald-200 bg-emerald-50/90 p-4 text-emerald-950 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-100">
-            <div className="flex items-center gap-2">
-              <IonIcon
-                icon={shieldCheckmarkOutline}
-                className="shrink-0 text-lg text-emerald-700 dark:text-emerald-400"
-              />
-              <h2 className="ds-card-title text-emerald-900 dark:text-emerald-200">Cadangkan &amp; Pulihkan Data</h2>
-            </div>
-            <p className="text-[12px] leading-relaxed text-emerald-800 dark:text-emerald-300/90">
-              Simpan salinan data usaha ke Google Drive pribadi atau chat WA sendiri agar tetap aman saat ganti HP.
-            </p>
-            <div className="grid grid-cols-2 gap-2.5 pt-0.5">
-              <DsButton size="md" variant="whatsapp" fullWidth onClick={() => void handleExportBackup()}>
-                Simpan Cadangan
-              </DsButton>
-
-              <input
-                ref={restoreInputRef}
-                type="file"
-                accept="application/json,.json"
-                className="hidden"
-                onChange={(e) => void handleImportBackup(e)}
-              />
-              <DsButton
-                size="md"
-                variant="outline"
-                fullWidth
-                className="!border-emerald-300 !text-emerald-800 dark:!border-emerald-700 dark:!text-emerald-300"
-                onClick={() => restoreInputRef.current?.click()}
-              >
-                Pulihkan Data
-              </DsButton>
-            </div>
-          </section>
-
-          {/* Card 4: Pengaturan & Bantuan (Ringkas 3 Baris) */}
-          <section className="qoc-card space-y-3">
-            <div className="ds-section-label">Pengaturan &amp; Bantuan</div>
-
-            <div className="divide-y divide-[var(--app-border)]">
-              {/* Row 1: Panduan Penggunaan QOC */}
-              <button
-                type="button"
-                onClick={() => {
-                  void hapticLight();
-                  setGuideOpen(true);
-                }}
-                className="flex w-full items-center justify-between gap-3 py-2.5 pt-0 text-left transition active:opacity-75"
-              >
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--ds-brand-soft)] text-[var(--ds-brand-primary)]">
-                    <IonIcon icon={bookOutline} className="text-base" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-[13px] font-bold text-[var(--ds-text-primary)]">Panduan Singkat QOC</div>
-                    <div className="truncate text-[11px] text-[var(--ds-text-muted)]">
-                      Alur cepat 4 langkah &amp; tips praktis
-                    </div>
-                  </div>
-                </div>
-                <IonIcon icon={chevronForwardOutline} className="shrink-0 text-base text-[var(--ds-text-muted)]" />
-              </button>
-
-              {/* Row 2: Tampilan Tema */}
-              <div className="space-y-2 py-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--ds-bg-muted)] text-[var(--ds-text-secondary)]">
-                    <IonIcon icon={colorPaletteOutline} className="text-base" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-[13px] font-bold text-[var(--ds-text-primary)]">Tampilan Aplikasi</div>
-                    <div className="text-[11px] text-[var(--ds-text-muted)]">
-                      Pilih tema terang, gelap, atau otomatis
-                    </div>
-                  </div>
-                </div>
-                <div className="ds-segmented grid-cols-3">
-                  {THEME_OPTIONS.map((opt) => (
+              {clients.length === 0 ? (
+                <p className="border-t border-[var(--app-border)] py-4 text-center text-[12px] text-[var(--ds-text-muted)]">
+                  Belum ada klien tersimpan. Ketuk <strong>+ Tambah</strong> di atas.
+                </p>
+              ) : (
+                <div className="divide-y divide-[var(--app-border)] border-t border-[var(--app-border)]">
+                  {clients.map((c) => (
                     <button
-                      key={opt.value}
+                      key={c.id}
                       type="button"
-                      data-active={String(themeMode === opt.value)}
-                      onClick={() => handleChangeTheme(opt.value)}
-                      className="ds-segment-btn"
+                      onClick={() => openEditClient(c)}
+                      className="flex w-full items-center gap-2.5 py-2.5 text-left transition active:opacity-75"
                     >
-                      {opt.label}
+                      <span
+                        aria-hidden="true"
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-[11px] font-extrabold text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300"
+                      >
+                        {getInitials(c.name)}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-[13px] font-bold text-[var(--ds-text-primary)]">{c.name}</div>
+                        <div className="truncate text-[11px] text-[var(--ds-text-muted)]">
+                          {c.company_name || 'Perorangan'}
+                        </div>
+                      </div>
+                      <span className="shrink-0 font-mono text-[11px] text-[var(--ds-text-muted)]">
+                        {c.phone_wa || '-'}
+                      </span>
+                      <IonIcon icon={chevronForwardOutline} className="shrink-0 text-sm text-[var(--ds-text-muted)]" />
                     </button>
                   ))}
                 </div>
-              </div>
+              )}
+            </section>
+          </div>
 
-              {/* Row 3: Data Contoh (Demo) */}
-              <div className="space-y-2 pt-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--ds-brand-soft)] text-[var(--ds-brand-primary)]">
-                    <IonIcon icon={sparklesOutline} className="text-base" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-[13px] font-bold text-[var(--ds-text-primary)]">Data Contoh (Demo)</div>
-                    <div className="text-[11px] text-[var(--ds-text-muted)]">
-                      Muat contoh simulasi atau bersihkan saat siap pakai asli
+          {/* Zone 3: Cadangkan & Pulihkan Data */}
+          <div>
+            <DsSectionHeader divider icon={shieldCheckmarkOutline} tone="success" title="Keamanan Data" />
+            <section className="space-y-3 rounded-[18px] border border-emerald-200 bg-emerald-50/90 p-4 text-emerald-950 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-100">
+              <div className="flex items-center gap-2">
+                <IonIcon
+                  icon={shieldCheckmarkOutline}
+                  className="shrink-0 text-lg text-emerald-700 dark:text-emerald-400"
+                />
+                <h2 className="ds-card-title text-emerald-900 dark:text-emerald-200">Cadangkan &amp; Pulihkan Data</h2>
+              </div>
+              <p className="text-[12px] leading-relaxed text-emerald-800 dark:text-emerald-300/90">
+                Simpan salinan data usaha ke Google Drive pribadi atau chat WA sendiri agar tetap aman saat ganti HP.
+              </p>
+              <div className="grid grid-cols-2 gap-2.5 pt-0.5">
+                <DsButton size="md" variant="whatsapp" fullWidth onClick={() => void handleExportBackup()}>
+                  Simpan Cadangan
+                </DsButton>
+
+                <input
+                  ref={restoreInputRef}
+                  type="file"
+                  accept="application/json,.json"
+                  className="hidden"
+                  onChange={(e) => void handleImportBackup(e)}
+                />
+                <DsButton
+                  size="md"
+                  variant="outline"
+                  fullWidth
+                  className="!border-emerald-300 !text-emerald-800 dark:!border-emerald-700 dark:!text-emerald-300"
+                  onClick={() => restoreInputRef.current?.click()}
+                >
+                  Pulihkan Data
+                </DsButton>
+              </div>
+            </section>
+          </div>
+
+          {/* Zone 4: Pengaturan & Bantuan */}
+          <div>
+            <DsSectionHeader divider icon={optionsOutline} tone="neutral" title="Pengaturan & Bantuan" />
+            <section className="qoc-card">
+              <div className="divide-y divide-[var(--app-border)]">
+                {/* Row 1: Tur Aplikasi Interaktif (Replay Spotlight Tour) */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    void hapticLight();
+                    appTour.start();
+                  }}
+                  className="flex w-full items-center justify-between gap-3 py-2.5 pt-0 text-left transition active:opacity-75"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--ds-brand-soft)] text-[var(--ds-brand-primary)]">
+                      <IonIcon icon={compassOutline} className="text-base" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[13px] font-bold text-[var(--ds-text-primary)]">Tur Aplikasi</div>
+                      <div className="truncate text-[11px] text-[var(--ds-text-muted)]">
+                        Putar ulang sorotan fitur utama (5 langkah)
+                      </div>
                     </div>
                   </div>
+                  <IonIcon icon={chevronForwardOutline} className="shrink-0 text-base text-[var(--ds-text-muted)]" />
+                </button>
+
+                {/* Row 2: Panduan Penggunaan QOC */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    void hapticLight();
+                    setGuideOpen(true);
+                  }}
+                  className="flex w-full items-center justify-between gap-3 py-3 text-left transition active:opacity-75"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--ds-brand-soft)] text-[var(--ds-brand-primary)]">
+                      <IonIcon icon={bookOutline} className="text-base" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[13px] font-bold text-[var(--ds-text-primary)]">Panduan Singkat QOC</div>
+                      <div className="truncate text-[11px] text-[var(--ds-text-muted)]">
+                        Alur cepat 4 langkah &amp; tips praktis
+                      </div>
+                    </div>
+                  </div>
+                  <IonIcon icon={chevronForwardOutline} className="shrink-0 text-base text-[var(--ds-text-muted)]" />
+                </button>
+
+                {/* Row 2: Tampilan Tema */}
+                <div className="space-y-2 py-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--ds-bg-muted)] text-[var(--ds-text-secondary)]">
+                      <IonIcon icon={colorPaletteOutline} className="text-base" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[13px] font-bold text-[var(--ds-text-primary)]">Tampilan Aplikasi</div>
+                      <div className="text-[11px] text-[var(--ds-text-muted)]">
+                        Pilih tema terang, gelap, atau otomatis
+                      </div>
+                    </div>
+                  </div>
+                  <div className="ds-segmented grid-cols-3">
+                    {THEME_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        data-active={String(themeMode === opt.value)}
+                        onClick={() => handleChangeTheme(opt.value)}
+                        className="ds-segment-btn"
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <DsButton size="sm" variant="secondary" fullWidth onClick={() => void handleLoadDemo()}>
-                    Muat Contoh
-                  </DsButton>
-                  <DsButton size="sm" variant="danger" fullWidth onClick={() => setConfirmClearAll(true)}>
-                    Bersihkan Data
-                  </DsButton>
+
+                {/* Row 3: Data Contoh (Demo) */}
+                <div className="space-y-2 pt-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--ds-brand-soft)] text-[var(--ds-brand-primary)]">
+                      <IonIcon icon={sparklesOutline} className="text-base" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[13px] font-bold text-[var(--ds-text-primary)]">Data Contoh (Demo)</div>
+                      <div className="text-[11px] text-[var(--ds-text-muted)]">
+                        Muat contoh simulasi atau bersihkan saat siap pakai asli
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <DsButton size="sm" variant="secondary" fullWidth onClick={() => void handleLoadDemo()}>
+                      Muat Contoh
+                    </DsButton>
+                    <DsButton size="sm" variant="danger" fullWidth onClick={() => setConfirmClearAll(true)}>
+                      Bersihkan Data
+                    </DsButton>
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
 
           {/* Subtle Centered Colophon Footer (Clean, Restrained Credit) */}
-          <footer className="pb-3 pt-1 text-center text-[11px] leading-relaxed text-[var(--ds-text-muted)]/80">
+          <footer className="border-t border-[var(--app-border)]/70 pb-3 pt-4 text-center text-[11px] leading-relaxed text-[var(--ds-text-muted)]/80">
             <div>QOC v1.0 · Penyimpanan Offline Aman</div>
             <div className="mt-0.5">
               Developed by{' '}

@@ -23,7 +23,14 @@ export const WaPreviewModal: React.FC<WaPreviewModalProps> = ({
   onClose,
   onConfirm,
 }) => (
-  <IonModal isOpen={isOpen} initialBreakpoint={0.65} breakpoints={[0, 0.65, 0.9]} onDidDismiss={onClose}>
+  <IonModal
+    isOpen={isOpen}
+    className="qoc-sheet-modal"
+    initialBreakpoint={0.65}
+    breakpoints={[0, 0.65, 0.9]}
+    handleBehavior="cycle"
+    onDidDismiss={onClose}
+  >
     <IonHeader className="ion-no-border">
       <IonToolbar>
         <IonTitle className="ds-page-title">

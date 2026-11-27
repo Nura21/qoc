@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { getDb } from '../../db/client';
 import { seedDemoDataIfEmpty } from '../../db/seedDemoData';
+import { appTour } from '../../store/appTour';
 
 interface LaunchSplashProps {
   /** Minimum brand animation duration in ms (defaults to 1150ms for silky smooth opening reveal) */
@@ -42,7 +43,10 @@ export const LaunchSplash: React.FC<LaunchSplashProps> = ({ minDurationMs = 1150
       if (!active) return;
       setPhase('exit');
       unmountTimer = window.setTimeout(() => {
-        if (active) setPhase('gone');
+        if (active) {
+          setPhase('gone');
+          appTour.notifySplashFinished();
+        }
       }, fadeOutMs);
     });
 
